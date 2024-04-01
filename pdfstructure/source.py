@@ -2,8 +2,16 @@ import itertools
 from typing import Generator, Any
 
 from pdfminer.high_level import extract_pages
-from pdfminer.layout import LTTextContainer, LAParams, LTFigure, LTTextBoxHorizontal, LTTextLineHorizontal, LTChar, \
-    LTTextBoxVertical
+from pdfminer.layout import (
+    LTTextContainer,
+    LTTextLine,
+    LAParams,
+    LTFigure,
+    LTTextBoxHorizontal,
+    LTTextLineHorizontal,
+    LTChar,
+    LTTextBoxVertical,
+)
 
 
 class Source:
@@ -87,6 +95,8 @@ class FileSource(Source):
         wrapper.page = container.page
         stack = []
         for line in container:
+            if not isinstance(line, LTTextLine):  # this could be not real "text_line"
+                continue
             size = max([obj.size for obj in itertools.islice(line, 10) if isinstance(obj, LTChar)])
             if not stack:
                 wrapper.add(line)
